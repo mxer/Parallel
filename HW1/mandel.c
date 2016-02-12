@@ -45,9 +45,9 @@ int main(int argc, char** argv) {
 		double xoff = (double)(p * W / (double)P);
 		for (x = xoff; x < (p + 1)*wp; x++)
 		{
-			dreal = x * dx - B + 1.5; // remove the 1.5 for full image
+			dreal = x * dx - B + 1.5; // remove the 1.5 to stop panning
 			for (y = 0; y < H; y++) {
-				dimg = y * dy - B + 1.5; // remove the 1.5 for full image
+				dimg = y * dy - B + 1.5; // remove the 1.5 to stop panning
 				color[x + y * W] = cal_pixel(dreal, dimg);
 			}
 		}
