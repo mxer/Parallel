@@ -1,7 +1,7 @@
 clear all
 close all
 
-fileID = fopen('u_result_4.txt','r');
+fileID = fopen('test.txt','r');
 % u = zeros(1002, 1);
 u = fscanf(fileID,'%f');
 fclose(fileID);

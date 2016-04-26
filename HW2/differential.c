@@ -18,7 +18,7 @@
 #define N 1000   /* number of inner grid points */
 #define SMX 1000000 /* number of iterations */
 #define PI 3.14159265
-#define filename "u_result_3.txt"
+#define filename "test.txt"
 
 /* implement coefficient functions */
 double r(const double x)
