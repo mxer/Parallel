@@ -8,68 +8,70 @@
 #include <vector>
 #include <sstream>
 
-#define SLICES 3
+#define SLICES 6
 #define K 2
 
 std::vector<cv::Mat> read_images()
 {
   std::vector<cv::Mat> images;
-  // std::string file_name = "/home/thomai/Dropbox/KTH/4th Semester/Parallel Computations for Large - Scale Problems/project/disc1/OAS1_0003_MR1/RAW/OAS1_0003_MR1_mpr-";
-  // std::string file_end = "_anon_sag_66.hdr";
 
-  std::string file_name = "/home/thomai/Dropbox/KTH/4th Semester/Parallel Computations for Large - Scale Problems/project/dots_2";
+  std::string file_name = "/home/thomai/Dropbox/KTH/4th Semester/Parallel Computations for Large - Scale Problems/Parallel/project/dots_4";
   std::string file_end = ".png";
-
+  std::ostringstream file;
+  file << file_name << file_end;
   for (int i = 1; i <= SLICES; i++)
   {
-    std::ostringstream file;
-    file << file_name << file_end;
-
     images.push_back(cv::imread(file.str().c_str(), 0));
   }
   return images;
 }
 
-std::vector<cv::Mat> three_d_connected_components(std::vector<cv::Mat> images)
+void three_d_connected_components(std::vector<cv::Mat> images,
+                                  std::vector<cv::Rect> &blobs,
+                                  std::vector<int> &image_count,
+                                  std::vector<int> &blob_count)
 {
   int label_count = K;
   /// First do connected components to each 2D image
-  std::vector<cv::Mat> blobbed_image;
   for (size_t img = 0; img < images.size(); img++)
   {
     cv::Mat temp;
+    cv::Rect temp_rect[1];
     images[img].copyTo(temp);
-    blobbed_image.push_back(temp);
-    for (int i = 0; i < blobbed_image[img].rows; i++)
+    for (int i = 0; i < temp.rows; i++)
     {
-      for (int j = 0; j < blobbed_image[img].cols; j++)
+      for (int j = 0; j < temp.cols; j++)
       {
-        if ((int)blobbed_image[img].at<int>(i, j) == 0)
+        if ((int)temp.at<int>(i, j) == 0)
         {
-          cv::floodFill(blobbed_image[img], cv::Point(j, i),
-                        cv::Scalar(label_count));
+          image_count.push_back(static_cast<int>(img));
+          cv::floodFill(temp, cv::Point(j, i), cv::Scalar(label_count),
+                        temp_rect);
+          blobs.push_back(temp_rect[0]);
+          blob_count.push_back(label_count);
           label_count++;
         }
       }
     }
-    blobbed_image[img].convertTo(blobbed_image[img], CV_8U);
   }
 
-  for (size_t img = 1; img < images.size(); img++)
+  for (size_t i = 0; i < image_count.size(); i++)
   {
-    for (int i = 0; i < blobbed_image[img].rows; i++)
+    int first = image_count[i];
+    for (size_t j = i; j < image_count.size(); j++)
     {
-      for (int j = 0; j < blobbed_image[img].cols; j++)
+      int second = image_count[j];
+      if (second == first + 1)
       {
-        if ((int)blobbed_image[img - 1].at<uint8_t>(i, j) != 1)
+        /// Only checking consecutive images
+        cv::Rect intersection = blobs[i] & blobs[j];
+        if (intersection.height != 0 && intersection.width != 0)
         {
-          blobbed_image[img].at<uint8_t>(i, j) =
-           blobbed_image[img - 1].at<uint8_t>(i, j);
+          blob_count[j] = blob_count[i];
         }
       }
     }
   }
-  return blobbed_image;
 }
 
 
@@ -93,7 +95,6 @@ int main(int argc, char *argv[])
   {
     number_of_pixels += images[i].rows * images[i].cols;
   }
-  // cv::Mat pixel_values(number_of_pixels, 1, CV_8U);
   cv::Mat pixel_values;
   for (int i = 0; i < SLICES; i++)
   {
@@ -101,7 +102,6 @@ int main(int argc, char *argv[])
     images[i].reshape(1, images[i].rows * images[i].cols).copyTo(temp);
     pixel_values.push_back(temp);
   }
-
   pixel_values.convertTo(pixel_values, CV_32F);
 
   /// Do k-means
@@ -123,25 +123,39 @@ int main(int argc, char *argv[])
     // cv::Mat new_temp;
     temp = temp.reshape(1, images[i].rows);
     clustered_images.push_back(temp);
+  }
+  std::vector<cv::Rect> blobs;
+  std::vector<int> blob_count;
+  std::vector<int> image_count;
+  three_d_connected_components(clustered_images, blobs, image_count,
+                               blob_count);
 
-    std::ostringstream name1, name2;
-    name1 << "Original " << i + 1;
-    name2 << "Segmented " << i + 1;
-    cv::namedWindow(name1.str().c_str(), 1);
-    cv::imshow(name1.str().c_str(), images[i]);
-
-    cv::namedWindow(name2.str().c_str(), 1);
-    cv::imshow(name2.str().c_str(), temp);
+  for (size_t i = 0; i < blob_count.size(); i++)
+  {
+    blob_count[i] -= K;
   }
 
-  std::vector<cv::Mat> final = three_d_connected_components(clustered_images);
-
+  /// Show images
   for (int i = 0; i < SLICES; i++)
   {
-    std::ostringstream name;
-    name << "Blobbed " << i + 1;
-    cv::namedWindow(name.str().c_str(), 1);
-    cv::imshow(name.str().c_str(), final[i]);
+    /// Draw rectangles on image
+    for (size_t r = 0; r < image_count.size(); r++)
+    {
+      if (image_count[r] == i)
+      {
+        rectangle(images[i], blobs[r], cv::Scalar(0, 0, 0), 1);
+        std::ostringstream txt;
+        txt << blob_count[r];
+        cv::Point origin(blobs[r].x + blobs[r].width / 2,
+                         blobs[r].y + blobs[r].height / 2);
+        putText(images[i], txt.str().c_str(), origin,
+                cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(0, 0, 0), 1);
+      }
+    }
+    std::ostringstream name1;
+    name1 << "Original " << i + 1;
+    cv::namedWindow(name1.str().c_str(), 1);
+    cv::imshow(name1.str().c_str(), images[i]);
   }
   cv::waitKey(0);
   return 0;

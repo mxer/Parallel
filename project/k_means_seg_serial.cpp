@@ -42,8 +42,7 @@ int main(int argc, char *argv[])
     {
       if ((int)blobbed_image.at<int>(i, j) == 1)
       {
-        cv::floodFill(blobbed_image, cv::Point(j, i),
-                      cv::Scalar(label_count));
+        cv::floodFill(blobbed_image, cv::Point(j, i), cv::Scalar(label_count));
         label_count++;
       }
     }
