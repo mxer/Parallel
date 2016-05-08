@@ -17,7 +17,7 @@ std::vector<cv::Mat> read_images(int I, int dot_idx)
 {
   std::vector<cv::Mat> images;
 
-  std::string file_name = "/home/thomai/Dropbox/KTH/4th Semester/Parallel Computations for Large - Scale Problems/Parallel/project/dots_";
+  std::string file_name = "/cfs/klemming/nobackup/t/thomai/project/dots_";
   std::string file_end = ".png";
   std::ostringstream file;
   file << file_name << dot_idx << file_end;
@@ -111,7 +111,6 @@ int main(int argc, char *argv[])
   }
   I = Ip[p]; // Number of elements for current processor
 
-
   /// READ IMAGES ==============================================================
   std::vector<cv::Mat> images = read_images(I, dot_idx);
 
@@ -122,6 +121,11 @@ int main(int argc, char *argv[])
       std::cout << "ERROR: Images need to be of the same size\n";
       return -1;
     }
+  }
+
+  if (p == 0)
+  {
+    printf ("%d, %d, %d\n", P, N, images[0].rows);
   }
 
   /// RESHAPE IMAGES ===========================================================
@@ -382,7 +386,7 @@ int main(int argc, char *argv[])
 
   end_time = MPI_Wtime();
   if (p == 0) {
-    printf ("%e, %d, %d\n", end_time - start_time, P, N);
+    printf ("%e", end_time - start_time);
   }
   /* That's it */
   MPI_Finalize();

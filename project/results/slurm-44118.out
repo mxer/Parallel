@@ -1,0 +1,6 @@
+8, 1024, 1024
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** STEP 44118.0 ON t01n13 CANCELLED AT 2016-05-08T16:29:18 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 44118 ON t01n13 CANCELLED AT 2016-05-08T16:29:18 DUE TO TIME LIMIT ***
+srun: got SIGCONT
+srun: forcing job termination

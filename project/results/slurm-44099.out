@@ -1,0 +1,10 @@
+OpenCV Error: Assertion failed (N >= K) in kmeans, file /cfs/klemming/nobackup/t/thomai/opencv-2.4.12/modules/core/src/matrix.cpp, line 2702
+OpenCV Error: Assertion failed (N >= K) in kmeans, file /cfs/klemming/nobackup/t/thomai/opencv-2.4.12/modules/core/src/matrix.cpp, line 2702
+terminate called after throwing an instance of 'cv::Exception'
+  what():  /cfs/klemming/nobackup/t/thomai/opencv-2.4.12/modules/core/src/matrix.cpp:2702: error: (-215) N >= K in function kmeans
+
+terminate called after throwing an instance of 'cv::Exception'
+  what():  /cfs/klemming/nobackup/t/thomai/opencv-2.4.12/modules/core/src/matrix.cpp:2702: error: (-215) N >= K in function kmeans
+
+4, 2, 768
+APPLICATION TERMINATED WITH THE EXIT STRING: Aborted (signal 6)
