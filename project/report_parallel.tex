@@ -1,0 +1,66 @@
+\documentclass{article}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage{geometry}%
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+\begin{document}
+	\title{Parallel Processing Report}
+	\maketitle
+	\section{Problem Definition}
+		With the digitization of many medical devices, the images generated have grown higher in resolution and larger in quantity. MRI machines, produce a sequence that contains several hundred high resolution images, each image representing a slice of the tissue being filmed. Processing such sequences requires extensive computation. Doing such computations on one processor takes very long time. One of the most common processing procedures is to do K-menas clustering on these images, with in 3D, that is, produce clusters for each image, and merge them with the corresponding clusters in other images, to do a 3D cluster of the images, which in would correspond to for example, segmenting a muscle or bone. In this article, we explore doing this application on a multi-core architecture.
+	\section{Proposed Algorithm}\label{sec:alg}
+		This problem has a map-reduce compatible nature, therefore we have divided the problem into two subtasks:
+		\begin{enumerate}
+			\item Generate clusters on each image. \label{task:1}
+			\item Merge clusters of consequtive images. \label{task:2}
+		\end{enumerate}
+		\subsection{Generate clusters on each image}
+			Generating clusters on one image is independent of all the other images. Therefore, this is an embarassingly parallel task, where we distribute the slices in an ordered fashion over the available cores, a chunk of images per core, where each chunk is $N/P$ where $N$ is the slice count and $P$ the processor count. Then each core computes a sequential K-means on its designated slices. This can be seen in details in Procedure \textit{Cluster} in Algorithm~\ref{algo}.
+		\subsection{Merge clusters of consequtive images}
+			The clusters that were generated in the previous step are then combined together into one set of clusters. This has to be done sequentially in order to maintain stability in the labels. This sequential merging was achieved by having each processor merge the labels of its preceding processor, and send its new set of labels to the following processor. This can be seen in details in Procedure \textit{Merge} in Algorithm~\ref{algo}.
+		\begin{algorithm}
+			\caption{3D K-means}\label{algo}
+			\begin{algorithmic}[1]
+				\Procedure{Cluster}{}
+				\State $N \gets$ number of Images
+				\State $P \gets$ number of Processors
+				\State $p \gets$ processor Id
+				\State $\textit{p\_images} \gets $images[range($p*(N/P), (p+1)*(N/P))$]$ $
+				\For{$i$ in 0, length($p\_images$)}
+				\State $labels[i] \gets$ k\_means(\textit{p\_images}[i])
+				\State $blobs[i] \gets$ connected\_components($p\_images[i], labels[i]$)
+				\EndFor
+			
+				\EndProcedure
+				
+				\Procedure{Merge}{}
+				\State $c\_blobs \gets$ combine\_blobs($blobs[0], blobs$)
+				\If {$p~!=0$}
+					\State receive($previous\_blobs$)
+					\State combine\_blobs($blobs, previous\_blobs$)\\
+				\EndIf
+					\State send($p+1, c\_blobs$)
+				\EndProcedure
+				\Procedure{combine\_blobs}{blobs, blobs\_list}
+				\State $intersections \gets$ intersect\_blobs\_rectangle($blobs, blobs\_list$)
+				\For{$i$ in 0, length($intersections$)}
+					\State $new\_blobs \gets blobs[intersections[i]]$
+				\EndFor
+				\EndProcedure
+			\end{algorithmic}
+		\end{algorithm}
+		
+		
+	\section{Theoretical Performance Analysis}
+		We define the time complexity in terms of number of images processed per unit time. For Task~\ref{task:1}, the complexity of the algorithm for the sequential version is $O(N)$. Since the task is embarassingly parallel, the complexity is $O(N/P)$ for the parallel version. For Task~2, the complexity of the algorithm is again $O(N)$, and for the parallel version, its the same.
+	
+\end{document}
