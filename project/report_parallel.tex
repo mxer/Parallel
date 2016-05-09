@@ -16,12 +16,12 @@
 	\title{Parallel Processing Report}
 	\maketitle
 	\section{Problem Definition}
-		With the digitization of many medical devices, the images generated have grown higher in resolution and larger in quantity. MRI machines, produce a sequence that contains several hundred high resolution images, each image representing a slice of the tissue being filmed. Processing such sequences requires extensive computation. Doing such computations on one processor takes very long time. One of the most common processing procedures is to do K-menas clustering on these images, with in 3D, that is, produce clusters for each image, and merge them with the corresponding clusters in other images, to do a 3D cluster of the images, which in would correspond to for example, segmenting a muscle or bone. In this article, we explore doing this application on a multi-core architecture.
+		With the digitization of many medical devices, the images generated have grown higher in resolution and larger in quantity. MRI machines, produce a sequence that contains several hundred high resolution images, each image representing a slice of the tissue being filmed. Processing such sequences requires extensive computation. One of the most common processing procedures is to cluster the sequence of images in 3D, that is, connect different clusters that exist in each slice, with ones that exist in the next slice, which then would correspond to, for example, segmenting a muscle or bone in 3D. Doing such computations on one processor takes a significant amount of time. In this article, we explore a method to approach this task on a multi-core architecture.
 	\section{Proposed Algorithm}\label{sec:alg}
-		This problem has a map-reduce compatible nature, therefore we have divided the problem into two subtasks:
+		A common approach to solving the problem of detecting 3D clutsres is to divide the problem into two parts, generate clusters on each image separately, then connect these clusters accross images. This solution is map-reduce compatible. Following this approach, we have divided the problem into two subtasks:
 		\begin{enumerate}
-			\item Generate clusters on each image. \label{task:1}
-			\item Merge clusters of consequtive images. \label{task:2}
+			\item Generate clusters on each image. (Map) \label{task:1}
+			\item Merge clusters of consequtive images. (Reduce) \label{task:2}
 		\end{enumerate}
 		\subsection{Generate clusters on each image}
 			Generating clusters on one image is independent of all the other images. Therefore, this is an embarassingly parallel task, where we distribute the slices in an ordered fashion over the available cores, a chunk of images per core, where each chunk is $N/P$ where $N$ is the slice count and $P$ the processor count. Then each core computes a sequential K-means on its designated slices. This can be seen in details in Procedure \textit{Cluster} in Algorithm~\ref{algo}.
