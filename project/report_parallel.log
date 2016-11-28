@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.1415926-2.5-0.9999.3 (TeX Live 2013/Debian) (format=xelatex 2016.3.22)  20 MAY 2016 13:13
+This is XeTeX, Version 3.1415926-2.5-0.9999.3 (TeX Live 2013/Debian) (format=xelatex 2016.3.22)  28 NOV 2016 15:52
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -261,31 +261,31 @@ File: example.png Graphic file (type QTm)
 <use  "example.png" > [3]
 File: large_one_node_1.jpg Graphic file (type QTm)
  <use  "large_one_node_1.jpg" >
-Overfull \hbox (31.42691pt too wide) in paragraph at lines 141--142
+Overfull \hbox (31.42691pt too wide) in paragraph at lines 140--141
  [][] 
  []
 
 File: large_one_node_speedup.jpg Graphic file (type QTm)
 <use  "large_one_node_speedup.jpg" >
-Overfull \hbox (31.42691pt too wide) in paragraph at lines 148--149
+Overfull \hbox (31.42691pt too wide) in paragraph at lines 147--148
  [][] 
  []
 
 File: small_one_node_1.jpg Graphic file (type QTm)
 <use  "small_one_node_1.jpg" >
-Overfull \hbox (31.42691pt too wide) in paragraph at lines 156--157
+Overfull \hbox (31.42691pt too wide) in paragraph at lines 155--156
  [][] 
  []
 
 File: small_one_node_speedup.jpg Graphic file (type QTm)
 <use  "small_one_node_speedup.jpg" >
-Overfull \hbox (31.42691pt too wide) in paragraph at lines 163--164
+Overfull \hbox (31.42691pt too wide) in paragraph at lines 162--163
  [][] 
  []
 
 File: nodes_1.jpg Graphic file (type QTm)
 <use  "nodes_1.jpg" >
-Overfull \hbox (31.42691pt too wide) in paragraph at lines 174--175
+Overfull \hbox (31.42691pt too wide) in paragraph at lines 173--174
  [][] 
  []
 
