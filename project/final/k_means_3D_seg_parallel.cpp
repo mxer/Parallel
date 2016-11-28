@@ -19,7 +19,7 @@ std::vector<cv::Mat> read_images(int I, int dot_idx)
 
   /// Absolute path of the image's location.
   /// The image's index is given as an input
-  std::string file_name = "/home/thomai/Dropbox/KTH/4th Semester/Parallel Computations for Large - Scale Problems/Parallel/project/dots_";
+  std::string file_name = "/home/thomai/Dropbox/KTH/4th Semester/Parallel Computations for Large - Scale Problems/Parallel/project/final/dots_";
   std::string file_end = ".png";
   std::ostringstream file;
   file << file_name << dot_idx << file_end;
